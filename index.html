@@ -11,40 +11,43 @@
             background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
             margin: 0; padding: 10px; color: #222; min-height: 100vh;
         }
-        .container { max-width: 1100px; margin: auto; }
+        .container { max-width: 1200px; margin: auto; }
         header { text-align: center; padding: 25px 15px; background: var(--grass-dark); border-radius: 25px; color: white; margin-bottom: 20px; }
         header h1 { margin: 0; font-size: 32px; font-weight: 900; }
 
-        .main-layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
-        @media (max-width: 850px) { .main-layout { grid-template-columns: 1fr; } }
+        .main-layout { display: grid; grid-template-columns: 280px 1fr 280px; gap: 15px; }
+        @media (max-width: 1000px) { .main-layout { grid-template-columns: 1fr; } }
 
         .sidebar-card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); height: fit-content; }
         .content-card { background: #fff; border-radius: 25px; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 
         .controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; }
         select { padding: 8px; font-size: 16px; font-weight: 900; border: 2px solid var(--grass-light); border-radius: 10px; background: white; cursor: pointer; }
-        .btn-toggle { background: var(--grass-light); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 15px; font-weight: 900; }
+        .btn-toggle { background: var(--grass-light); color: white; border: none; padding: 8px 15px; border-radius: 50px; cursor: pointer; font-size: 14px; font-weight: 900; }
 
-        .section-title { background: #f1f8e9; padding: 12px 15px; font-weight: 900; color: var(--grass-dark); border-left: 6px solid var(--grass-dark); margin-bottom: 15px; font-size: 18px; border-radius: 0 10px 10px 0; }
+        .section-title { background: #f1f8e9; padding: 12px 15px; font-weight: 900; color: var(--grass-dark); border-left: 6px solid var(--grass-dark); margin-bottom: 15px; font-size: 17px; border-radius: 0 10px 10px 0; }
 
         table { width: 100%; border-collapse: collapse; }
-        th { padding: 12px 5px; color: var(--grass-dark); font-size: 15px; font-weight: 900; border-bottom: 3px solid var(--grass-light); }
-        .player-row td { padding: 15px 5px; text-align: center; border-bottom: 1px solid #eee; font-size: 18px; font-weight: 900; cursor: pointer; }
+        th { padding: 12px 5px; color: var(--grass-dark); font-size: 14px; font-weight: 900; border-bottom: 3px solid var(--grass-light); }
+        .player-row td { padding: 15px 5px; text-align: center; border-bottom: 1px solid #eee; font-size: 17px; font-weight: 900; cursor: pointer; }
         
-        .avg-row td { padding: 12px 5px; border-bottom: 1px solid #f0f0f0; }
-        .avg-rank { font-weight: 900; color: #666; width: 40px; }
-        .avg-name { font-weight: 900; text-align: left; padding-left: 10px !important; }
-        .avg-score { font-weight: 900; color: #d32f2f; text-align: right; padding-right: 15px !important; }
+        .avg-row td { padding: 10px 5px; border-bottom: 1px solid #f0f0f0; font-size: 15px; }
+        .avg-rank { font-weight: 900; color: #888; width: 30px; }
+        .avg-name { font-weight: 900; text-align: left; }
+        .avg-score { font-weight: 900; color: #d32f2f; text-align: right; }
 
-        .total-score { color: #d32f2f; font-size: 22px !important; }
+        .record-box { background: #f9f9f9; padding: 12px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #eee; }
+        .record-label { font-size: 13px; color: #666; font-weight: 900; margin-bottom: 5px; display: block; }
+        .record-value { font-size: 18px; font-weight: 900; color: var(--grass-dark); }
+        .record-count { float: right; color: #d32f2f; }
 
+        .total-score { color: #d32f2f; font-size: 20px !important; }
         .details { display: none; background-color: var(--sand); }
-        .score-table { width: 100%; border: 1.5px solid #bbb; background: white; font-size: 13px; font-weight: 900; margin-bottom: 8px; }
-        .score-table td { padding: 6px 1px; border: 1px solid #ccc; text-align: center; position: relative; }
+        .score-table { width: 100%; border: 1.5px solid #bbb; background: white; font-size: 12px; font-weight: 900; margin-bottom: 8px; }
+        .score-table td { padding: 5px 1px; border: 1px solid #ccc; text-align: center; position: relative; }
         .hole-header { background: #444; color: white; }
-        
         .buddy { color: #d32f2f; font-weight: 900; z-index: 1; position: relative; }
-        .buddy::before { content: '🦋'; position: absolute; opacity: 0.35; font-size: 18px; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
+        .buddy::before { content: '🦋'; position: absolute; opacity: 0.35; font-size: 16px; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
     </style>
 </head>
 <body>
@@ -53,16 +56,14 @@
     <header><h1>⛳ 향정회 월례회 리더보드</h1></header>
 
     <div class="main-layout">
-        <!-- 왼쪽: 월평균 순위 (지정 멤버만) -->
+        <!-- 왼쪽: 시즌 평균 타수 -->
         <div class="sidebar-card">
             <div class="section-title">📊 시즌 평균 타수 TOP</div>
-            <table id="avgLeaderboard">
-                <!-- 스크립트에서 자동 생성 -->
-            </table>
-            <p style="font-size: 12px; color: #888; margin-top: 15px; text-align: center;">* 지정 멤버 대상 합산 평균</p>
+            <table id="avgLeaderboard"></table>
+            <p style="font-size: 11px; color: #888; margin-top: 15px; text-align: center;">* 지정 멤버(7인) 합산 평균</p>
         </div>
 
-        <!-- 오른쪽: 월별 상세 리더보드 -->
+        <!-- 중앙: 월별 상세 리더보드 -->
         <div class="content-card">
             <div class="controls">
                 <select id="monthSelect" onchange="renderAll()">
@@ -80,13 +81,19 @@
                 </table>
             </div>
         </div>
+
+        <!-- 오른쪽: 라운드 기록 통계 -->
+        <div class="sidebar-card">
+            <div class="section-title">🏆 라운드 최다 기록</div>
+            <div id="roundRecords">
+                <!-- 스크립트에서 자동 생성 -->
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
     const COURSE = { 'L': [5,3,5,4,3,4,4,3,5], 'S': [4,4,3,4,5,4,3,4,5], 'M': [4,5,3,4,3,5,4,4,3] };
-    
-    // 평균 순위에 노출할 지정 멤버 명단
     const TARGET_MEMBERS = ["하종욱", "박종현", "서재근", "김경중", "박경배", "이인구", "조진호"];
 
     const MONTHLY_DATA = {
@@ -112,54 +119,62 @@
         ]
     };
 
-    function calculateAverages() {
-        const stats = {};
-        // 전체 데이터를 순회하며 지정된 멤버만 통계 계산
-        Object.values(MONTHLY_DATA).flat().forEach(p => {
-            if (TARGET_MEMBERS.includes(p.name)) {
-                if (!stats[p.name]) stats[p.name] = { total: 0, count: 0 };
-                stats[p.name].total += p.total;
-                stats[p.name].count += 1;
-            }
+    function calculateRecords(data) {
+        const stats = { buddy: { count: 0, names: [] }, par: { count: 0, names: [] }, bogey: { count: 0, names: [] } };
+        
+        data.forEach(p => {
+            const counts = { buddy: p.rel.filter(v => v < 0).length, par: p.rel.filter(v => v === 0).length, bogey: p.rel.filter(v => v === 1).length };
+            
+            Object.keys(counts).forEach(key => {
+                if (counts[key] > stats[key].count) {
+                    stats[key].count = counts[key];
+                    stats[key].names = [p.name];
+                } else if (counts[key] === stats[key].count && counts[key] > 0) {
+                    stats[key].names.push(p.name);
+                }
+            });
         });
-
-        return Object.entries(stats)
-            .map(([name, data]) => ({ name, avg: (data.total / data.count).toFixed(1) }))
-            .sort((a, b) => a.avg - b.avg);
+        return stats;
     }
 
     function renderAll() {
-        // 왼쪽 사이드바: 필터링된 평균 순위
-        const avgLeaderboard = document.getElementById('avgLeaderboard');
-        const averages = calculateAverages();
-        avgLeaderboard.innerHTML = averages.map((p, i) => `
-            <tr class="avg-row">
-                <td class="avg-rank">${i+1}</td>
-                <td class="avg-name">${p.name}</td>
-                <td class="avg-score">${p.avg}타</td>
-            </tr>
+        // 왼쪽: 평균 타수
+        const stats = {};
+        Object.values(MONTHLY_DATA).flat().forEach(p => {
+            if (TARGET_MEMBERS.includes(p.name)) {
+                if (!stats[p.name]) stats[p.name] = { total: 0, count: 0 };
+                stats[p.name].total += p.total; stats[p.name].count += 1;
+            }
+        });
+        const averages = Object.entries(stats).map(([name, d]) => ({ name, avg: (d.total/d.count).toFixed(1) })).sort((a,b) => a.avg - b.avg);
+        document.getElementById('avgLeaderboard').innerHTML = averages.map((p, i) => `
+            <tr class="avg-row"><td class="avg-rank">${i+1}</td><td class="avg-name">${p.name}</td><td class="avg-score">${p.avg}타</td></tr>
         `).join('');
 
-        // 오른쪽: 월별 리더보드 (모든 참여자 노출)
+        // 오른쪽: 라운드 기록
         const selectedMonth = document.getElementById('monthSelect').value;
         const currentData = MONTHLY_DATA[selectedMonth];
-        const board = document.getElementById('board');
-        board.innerHTML = '';
+        const recs = calculateRecords(currentData);
+        document.getElementById('roundRecords').innerHTML = `
+            <div class="record-box"><span class="record-label">🦋 최다 버디</span><div class="record-value">${recs.buddy.names.join(', ')}<span class="record-count">${recs.buddy.count}개</span></div></div>
+            <div class="record-box"><span class="record-label">⛳ 최다 파</span><div class="record-value">${recs.par.names.join(', ')}<span class="record-count">${recs.par.count}개</span></div></div>
+            <div class="record-box"><span class="record-label">⚠️ 최다 보기</span><div class="record-value">${recs.bogey.names.join(', ')}<span class="record-count">${recs.bogey.count}개</span></div></div>
+        `;
 
+        // 중앙 리더보드 (기존 렌더링 로직 동일)
+        const board = document.getElementById('board'); board.innerHTML = '';
         const sortedByScore = [...currentData].sort((a,b) => a.total - b.total);
         sortedByScore.forEach((p, i) => {
             const [outK, inK] = p.course.split('-');
             const rowId = `detail-${i}`;
-            const tr = document.createElement('tr');
-            tr.className = 'player-row';
+            const tr = document.createElement('tr'); tr.className = 'player-row';
             tr.onclick = () => { const el = document.getElementById(rowId); el.style.display = (el.style.display === 'table-row') ? 'none' : 'table-row'; };
-            
             let medal = i < 3 ? ['🥇','🥈','🥉'][i] : i+1;
             tr.innerHTML = `<td class="rank-num">${medal}</td><td>${p.name}<br><small>${p.course}</small></td><td>${p.out}</td><td>${p.in}</td><td class="total-score">${p.total}</td>`;
             board.appendChild(tr);
 
-            let oH="", oP="", oS="", iH="", iP="", iS="";
             const outP = COURSE[outK], inP = COURSE[inK];
+            let oH="", oP="", oS="", iH="", iP="", iS="";
             for(let j=0; j<9; j++) {
                 oH += `<td class="hole-header">${j+1}</td>`; oP += `<td style="background:#f9f9f9;color:#888;">${outP[j]}</td>`;
                 oS += `<td class="${p.rel[j]<0?'buddy':''}">${p.rel[j]===0?'-':(p.rel[j]>0?'+'+p.rel[j]:p.rel[j])}</td>`;
@@ -181,7 +196,6 @@
         document.querySelectorAll('.details').forEach(it => it.style.display = expanded ? 'table-row' : 'none');
         document.getElementById('toggleBtn').innerText = expanded ? "🔼 접기" : "📊 상세 보기";
     }
-
     renderAll();
 </script>
 </body>
