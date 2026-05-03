@@ -48,6 +48,28 @@
         .hole-header { background: #444; color: white; }
         .buddy { color: #d32f2f; font-weight: 900; z-index: 1; position: relative; }
         .buddy::before { content: '🦋'; position: absolute; opacity: 0.35; font-size: 16px; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1; }
+
+        /* 회칙 버튼 및 모달 스타일 */
+        .rule-btn { 
+            position: fixed; bottom: 30px; right: 30px; 
+            width: 70px; height: 70px; background: var(--grass-dark); 
+            color: white; border-radius: 50%; border: 4px solid white;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 14px; z-index: 1000;
+        }
+        .modal { 
+            display: none; position: fixed; z-index: 1001; left: 0; top: 0; 
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6); 
+        }
+        .modal-content { 
+            background: #fff; margin: 5% auto; padding: 30px; 
+            border-radius: 25px; width: 80%; max-width: 700px; max-height: 80vh; overflow-y: auto;
+            position: relative; line-height: 1.6;
+        }
+        .close { float: right; font-size: 30px; cursor: pointer; color: #aaa; font-weight: bold; }
+        .rule-text h3 { color: var(--grass-dark); border-bottom: 2px solid #eee; padding-bottom: 5px; margin-top: 20px; }
+        .rule-text p { margin: 5px 0; font-size: 15px; }
     </style>
 </head>
 <body>
@@ -85,9 +107,66 @@
         <!-- 오른쪽: 라운드 기록 통계 -->
         <div class="sidebar-card">
             <div class="section-title">🏆 라운드 최다 기록</div>
-            <div id="roundRecords">
-                <!-- 스크립트에서 자동 생성 -->
-            </div>
+            <div id="roundRecords"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 회칙 보기 버튼 -->
+<div class="rule-btn" onclick="openRule()">📜<span>회칙</span></div>
+
+<!-- 회칙 모달 -->
+<div id="ruleModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeRule()">&times;</span>
+        <h2 style="text-align: center; color: var(--grass-dark);">⛳ 향정회 골프 모임 회칙</h2>
+        <div class="rule-text">
+            <h3>제1조 (명칭)</h3> <p>본 모임은 “향정회”라 한다.</p>
+            <h3>제2조 (목적)</h3> <p>본 모임은 회원 간 친목 도모와 건전한 골프 활동을 목적으로 한다.</p>
+            <h3>제3조 (회원 구성)</h3>
+            <p>1. 동호회는 총 8인을 기준으로 운영한다.</p>
+            <p>2. 아난티 회원권 보유자를 정회원으로 한다.</p>
+            <p>3. 현재 회원은 7명으로 구성되며, 추가 1인은 수시 입회 가능하다.</p>
+            <p>4. 기존 회원이 회원권을 매각하더라도 본인 의사 및 회원 간의 협의로 회원 자격은 유지할 수 있다.</p>
+            <p>5. 신규 회원은 기존 회원 과반수 동의로 입회한다.</p>
+            <p>6. 기존 회원의 전체 동의로 8명 이상으로 회원 모집 가능하다.</p>
+            <h3>제4조 (임원)</h3>
+            <p>1. 동호회는 회장 1명, 총무 1명을 둔다.</p>
+            <p>2. 신규 임원은 회원들의 추천 및 동의에 의해 선임한다.</p>
+            <p>3. 총무는 월례회 경비 사용 내역 및 잔액을 사용 후 1주일 이내에 공지한다.</p>
+            <p>4. 임원은 회원들의 협의를 통해 연임할 수 있다.</p>
+            <h3>제5조 (정기 모임)</h3>
+            <p>1. 월례회는 매월 첫 번째 토요일에 실시하는 것으로 한다.</p>
+            <p>2. 일정 및 장소는 사전에 공지한다.</p>
+            <p>3. 일정은 회원들의 동의에 의해서 변경 가능하다.</p>
+            <h3>제6조 (회비)</h3>
+            <p>1. 연 회비는 30만원으로 한다.</p>
+            <p>2. 회비는 동호회 운영 및 행사비로 사용한다.</p>
+            <p>3. 식사비(중식, 그늘집, 석식)는 회비에서 처리한다.</p>
+            <p>4. 회비 사용 내역은 총무가 회원에게 공유한다.</p>
+            <p>5. 회비가 부족할 경우, 회원 협의를 통해 추가 회비를 징수할 수 있다.</p>
+            <h3>제7조 (경기 방식)</h3>
+            <p>1. 경기 방식은 스트로크 플레이를 원칙으로 한다.</p>
+            <p>2. 세부 경기 규칙 및 핸디 적용 여부는 사전에 공지한다.</p>
+            <h3>제8조 (특별 축하 이벤트)</h3>
+            <p>1. 회원 내 특별한 축하 이벤트 발생 시, 당사자와 협의하여 향정회 차원에서 기념한다.</p>
+            <p>2. 이벤트에는 홀인원, 최초 싱글, 이븐파 및 언더파 등을 포함한다.</p>
+            <h3>제9조 (초대 손님)</h3>
+            <p>1. 초대 손님의 그린피는 아난티 중앙 지정회원 기준으로 적용한다.</p>
+            <p>2. 초대 손님이 아난티 중앙 회원인 경우 정회원 그린피를 적용한다.</p>
+            <p>3. 초대 손님의 식사비는 1인당 3만원을 별도로 받는다.</p>
+            <h3>제10조 (카풀 지원)</h3>
+            <p>1. 본인 차로 3인 이상 카풀 제공 시 운전자에게 3만원을 지원한다.</p>
+            <h3>제11조 (경조사)</h3>
+            <p>1. 회원의 경조사 발생 시 동호회 명의로 화환을 발송한다.</p>
+            <h3>제12조 (의사결정)</h3>
+            <p>1. 회칙 제정 및 개정은 전체 회원 2/3 이상 찬성으로 결정한다.</p>
+            <h3>제13조 (에티켓 및 벌칙)</h3>
+            <p>1. 지각 및 무단 불참 벌금은 별도로 정하며, 품위 훼손 행위 시 회원 협의 조치한다.</p>
+            <h3>제14조 (탈퇴 및 자격)</h3>
+            <p>1. 회원은 자유롭게 탈퇴할 수 있으며, 재가입 시 전 회원 동의가 필요하다.</p>
+            <h3>제15조 (기타)</h3>
+            <p>1. 본 회칙은 26년 5월 1일부터 시행한다.</p>
         </div>
     </div>
 </div>
@@ -121,24 +200,17 @@
 
     function calculateRecords(data) {
         const stats = { buddy: { count: 0, names: [] }, par: { count: 0, names: [] }, bogey: { count: 0, names: [] } };
-        
         data.forEach(p => {
             const counts = { buddy: p.rel.filter(v => v < 0).length, par: p.rel.filter(v => v === 0).length, bogey: p.rel.filter(v => v === 1).length };
-            
             Object.keys(counts).forEach(key => {
-                if (counts[key] > stats[key].count) {
-                    stats[key].count = counts[key];
-                    stats[key].names = [p.name];
-                } else if (counts[key] === stats[key].count && counts[key] > 0) {
-                    stats[key].names.push(p.name);
-                }
+                if (counts[key] > stats[key].count) { stats[key].count = counts[key]; stats[key].names = [p.name]; }
+                else if (counts[key] === stats[key].count && counts[key] > 0) { stats[key].names.push(p.name); }
             });
         });
         return stats;
     }
 
     function renderAll() {
-        // 왼쪽: 평균 타수
         const stats = {};
         Object.values(MONTHLY_DATA).flat().forEach(p => {
             if (TARGET_MEMBERS.includes(p.name)) {
@@ -151,7 +223,6 @@
             <tr class="avg-row"><td class="avg-rank">${i+1}</td><td class="avg-name">${p.name}</td><td class="avg-score">${p.avg}타</td></tr>
         `).join('');
 
-        // 오른쪽: 라운드 기록
         const selectedMonth = document.getElementById('monthSelect').value;
         const currentData = MONTHLY_DATA[selectedMonth];
         const recs = calculateRecords(currentData);
@@ -161,7 +232,6 @@
             <div class="record-box"><span class="record-label">⚠️ 최다 보기</span><div class="record-value">${recs.bogey.names.join(', ')}<span class="record-count">${recs.bogey.count}개</span></div></div>
         `;
 
-        // 중앙 리더보드 (기존 렌더링 로직 동일)
         const board = document.getElementById('board'); board.innerHTML = '';
         const sortedByScore = [...currentData].sort((a,b) => a.total - b.total);
         sortedByScore.forEach((p, i) => {
@@ -189,6 +259,10 @@
             board.appendChild(dTr);
         });
     }
+
+    function openRule() { document.getElementById("ruleModal").style.display = "block"; }
+    function closeRule() { document.getElementById("ruleModal").style.display = "none"; }
+    window.onclick = function(event) { if (event.target == document.getElementById("ruleModal")) closeRule(); }
 
     let expanded = false;
     function toggleDetails() {
