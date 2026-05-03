@@ -61,12 +61,14 @@
     <header><h1>⛳ 향정회 월례회 리더보드</h1></header>
 
     <div class="main-layout">
+        <!-- 왼쪽: 시즌 평균 타수 TOP -->
         <div class="sidebar-card">
             <div class="section-title">📊 시즌 평균 타수 TOP</div>
             <table id="avgLeaderboard"></table>
-            <p style="font-size: 11px; color: #888; margin-top: 15px; text-align: center;">* 지정 멤버(닉네임) 합산 평균</p>
+            <p style="font-size: 11px; color: #888; margin-top: 15px; text-align: center;">* 닉네임 멤버 전용 순위</p>
         </div>
 
+        <!-- 중앙: 월별 상세 리더보드 -->
         <div class="content-card">
             <div class="controls">
                 <select id="monthSelect" onchange="renderAll()">
@@ -85,6 +87,7 @@
             </div>
         </div>
 
+        <!-- 오른쪽: 라운드 기록 통계 -->
         <div class="sidebar-card">
             <div class="section-title">🏆 라운드 최다 기록</div>
             <div id="roundRecords"></div>
@@ -98,85 +101,96 @@
     <div class="modal-content">
         <span class="close" onclick="closeRule()">&times;</span>
         <h2 style="text-align: center; color: var(--grass-dark);">⛳ 향정회 골프 모임 회칙</h2>
-        <div style="color:#444; font-size: 15px;">
+        <div style="color:#444; font-size: 15px; line-height: 1.8;">
             <p>본 회칙은 26년 5월 1일부터 시행하며, 회원 간 친목 도모를 목적으로 합니다.</p>
-            <p><strong>주요 규정:</strong> 연 회비 30만원, 매월 첫 번째 토요일 월례회, 아난티 회원권 기반 운영 등.</p>
+            <p><strong>공동 순위 규정:</strong> 동타 시 동일 순위 부여 후 인원만큼 건너뜁니다[cite: 2].</p>
         </div>
     </div>
 </div>
 
 <script>
     const COURSE = { 'L': [5,3,5,4,3,4,4,3,5], 'S': [4,4,3,4,5,4,3,4,5], 'M': [4,5,3,4,3,5,4,4,3] };
-    
-    // 변경된 닉네임 명단[cite: 2]
-    const TARGET_MEMBERS = ["패트릭", "데니", "제이", "케인", "케빈", "아이크", "존"];
 
+    // 닉네임 매핑 정의[cite: 2]
+    const NAME_MAP = {
+        "하종욱": "패트릭", "패트릭": "패트릭",
+        "이인구": "아이크", "아이크": "아이크",
+        "박경배": "케빈", "케빈": "케빈",
+        "김경중": "케인", "케인": "케인",
+        "서재근": "제이", "제이": "제이",
+        "박종현": "데니", "데니": "데니",
+        "조진호": "존", "존": "존"
+    };
+
+    const TARGET_MEMBERS = ["패트릭", "아이크", "케빈", "케인", "제이", "데니", "존"];
+
+    // 예시 데이터: 한국어 이름과 영문 이름이 혼용되어 있어도 자동 변환됨[cite: 2]
     const MONTHLY_DATA = {
         "4": [
-            { name: "패트릭", course: "S-M", out: 45, in: 43, total: 88, rel: [0,1,1,1,2,-1,1,2,2, 1,0,0,1,0,3,1,2,0] },
-            { name: "아이크", course: "S-M", out: 45, in: 45, total: 90, rel: [0,3,0,0,2,0,1,2,1, 0,1,3,0,0,2,2,2,0] },
-            { name: "케빈", course: "L-S", out: 42, in: 49, total: 91, rel: [0,1,1,-1,0,2,1,1,1, 1,1,3,3,0,1,1,2,1] },
-            { name: "제이", course: "L-S", out: 47, in: 46, total: 93, rel: [0,1,1,2,0,2,1,2,2, 2,1,1,1,1,0,2,1,1] },
+            { name: "하종욱", course: "S-M", out: 45, in: 43, total: 88, rel: [0,1,1,1,2,-1,1,2,2, 1,0,0,1,0,3,1,2,0] },
+            { name: "이인구", course: "S-M", out: 45, in: 45, total: 90, rel: [0,3,0,0,2,0,1,2,1, 0,1,3,0,0,2,2,2,0] },
+            { name: "박경배", course: "L-S", out: 42, in: 49, total: 91, rel: [0,1,1,-1,0,2,1,1,1, 1,1,3,3,0,1,1,2,1] },
+            { name: "서재근", course: "L-S", out: 47, in: 46, total: 93, rel: [0,1,1,2,0,2,1,2,2, 2,1,1,1,1,0,2,1,1] },
             { name: "정성일", course: "S-M", out: 46, in: 47, total: 93, rel: [0,3,0,0,1,1,2,2,1, 0,4,0,0,0,3,2,3,0] },
-            { name: "케인", course: "L-S", out: 44, in: 50, total: 94, rel: [0,1,1,1,1,1,1,0,2, 2,1,1,2,2,1,1,1,3] },
-            { name: "데니", course: "S-M", out: 49, in: 53, total: 102, rel: [0,2,1,2,2,2,1,3,0, 3,3,3,0,2,2,3,2,0] },
-            { name: "정승무", course: "L-S", out: 51, in: 51, total: 102, rel: [0,2,2,2,2,3,2,1,4, 1,2,1,3,1,3,0,1,3] }
+            { name: "김경중", course: "L-S", out: 44, in: 50, total: 94, rel: [0,1,1,1,1,1,1,0,2, 2,1,1,2,2,1,1,1,3] },
+            { name: "박종현", course: "S-M", out: 49, in: 53, total: 102, rel: [0,2,1,2,2,2,1,3,0, 3,3,3,0,2,2,3,2,0] }
         ],
         "5": [
             { name: "김동훈", course: "S-M", out: 42, in: 39, total: 81, rel: [1, 2, -1, 1, 0, 1, 0, 2, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0] },
-            { name: "패트릭", course: "L-S", out: 42, in: 40, total: 82, rel: [0, 0, 1, 1, 0, 2, -1, 0, 3, 0, 0, 1, 0, 1, 2, 0, 0, 0] },
-            { name: "데니", course: "S-M", out: 42, in: 42, total: 84, rel: [1, 3, 0, 0, 1, 2, 0, 0, -1, 0, 3, 0, -1, 0, 2, 2, 1, 0] },
-            { name: "아이크", course: "L-S", out: 44, in: 40, total: 84, rel: [1, 1, 2, 1, 0, 1, 0, 1, 1, 1, 1, -1, -1, 1, 2, 0, 1, 0] },
-            { name: "케인", course: "L-S", out: 42, in: 43, total: 85, rel: [0, 0, 1, 1, 1, 1, 1, 0, 1, 2, 2, 0, 0, 0, 1, 1, 1, 0] },
-            { name: "케빈", course: "S-M", out: 43, in: 44, total: 87, rel: [1, 1, 0, 2, 0, 2, 1, 1, -1, 3, 1, 0, 0, 1, 2, 1, 1, 0] },
-            { name: "제이", course: "S-M", out: 43, in: 46, total: 89, rel: [1, 2, 2, 0, 0, 0, 1, 1, 0, 2, 1, 0, 0, 1, 3, 1, 2, 1] },
-            { name: "김규곤", course: "L-S", out: 51, in: 43, total: 94, rel: [2, 1, 0, 0, 3, 3, 2, 3, 1, 1, 0, 1, 1, 2, 1, 1, 0, 0] }
+            { name: "하종욱", course: "L-S", out: 42, in: 40, total: 82, rel: [0, 0, 1, 1, 0, 2, -1, 0, 3, 0, 0, 1, 0, 1, 2, 0, 0, 0] },
+            { name: "박종현", course: "S-M", out: 42, in: 42, total: 84, rel: [1, 3, 0, 0, 1, 2, 0, 0, -1, 0, 3, 0, -1, 0, 2, 2, 1, 0] },
+            { name: "이인구", course: "L-S", out: 44, in: 40, total: 84, rel: [1, 1, 2, 1, 0, 1, 0, 1, 1, 1, 1, -1, -1, 1, 2, 0, 1, 0] },
+            { name: "김경중", course: "L-S", out: 42, in: 43, total: 85, rel: [0, 0, 1, 1, 1, 1, 1, 0, 1, 2, 2, 0, 0, 0, 1, 1, 1, 0] },
+            { name: "박경배", course: "S-M", out: 43, in: 44, total: 87, rel: [1, 1, 0, 2, 0, 2, 1, 1, -1, 3, 1, 0, 0, 1, 2, 1, 1, 0] },
+            { name: "서재근", course: "S-M", out: 43, in: 46, total: 89, rel: [1, 2, 2, 0, 0, 0, 1, 1, 0, 2, 1, 0, 0, 1, 3, 1, 2, 1] }
         ]
     };
 
-    function calculateRecords(data) {
-        const stats = { buddy: { count: 0, names: [] }, par: { count: 0, names: [] }, bogey: { count: 0, names: [] } };
-        data.forEach(p => {
-            const counts = { buddy: p.rel.filter(v => v < 0).length, par: p.rel.filter(v => v === 0).length, bogey: p.rel.filter(v => v === 1).length };
-            Object.keys(counts).forEach(key => {
-                if (counts[key] > stats[key].count) { stats[key].count = counts[key]; stats[key].names = [p.name]; }
-                else if (counts[key] === stats[key].count && counts[key] > 0) { stats[key].names.push(p.name); }
-            });
+    // 이름 자동 변환 함수[cite: 2]
+    function convertName(name) { return NAME_MAP[name] || name; }
+
+    function getRankings(list, scoreKey) {
+        let lastScore = -1, lastRank = 0;
+        return list.map((item, index) => {
+            const currentScore = parseFloat(item[scoreKey]);
+            if (currentScore !== lastScore) { lastRank = index + 1; lastScore = currentScore; }
+            return { ...item, rank: lastRank };
         });
-        return stats;
     }
 
     function renderAll() {
-        const stats = {};
-        Object.values(MONTHLY_DATA).flat().forEach(p => {
+        // 이름 변환 로직 적용[cite: 2]
+        const processedMonthly = {};
+        Object.keys(MONTHLY_DATA).forEach(m => {
+            processedMonthly[m] = MONTHLY_DATA[m].map(p => ({ ...p, name: convertName(p.name) }));
+        });
+
+        // 왼쪽: 시즌 평균 (이름 변환 후 TARGET 필터링)[cite: 1, 2]
+        const statsMap = {};
+        Object.values(processedMonthly).flat().forEach(p => {
             if (TARGET_MEMBERS.includes(p.name)) {
-                if (!stats[p.name]) stats[p.name] = { total: 0, count: 0 };
-                stats[p.name].total += p.total; stats[p.name].count += 1;
+                if (!statsMap[p.name]) statsMap[p.name] = { total: 0, count: 0 };
+                statsMap[p.name].total += p.total; statsMap[p.name].count += 1;
             }
         });
-        const averages = Object.entries(stats).map(([name, d]) => ({ name, avg: (d.total/d.count).toFixed(1) })).sort((a,b) => a.avg - b.avg);
-        document.getElementById('avgLeaderboard').innerHTML = averages.map((p, i) => `
-            <tr class="avg-row"><td class="avg-rank">${i+1}</td><td class="avg-name">${p.name}</td><td class="avg-score">${p.avg}타</td></tr>
+        const avgList = Object.entries(statsMap).map(([name, d]) => ({ name, avg: (d.total/d.count).toFixed(1) })).sort((a,b) => a.avg - b.avg);
+        document.getElementById('avgLeaderboard').innerHTML = getRankings(avgList, 'avg').map(p => `
+            <tr class="avg-row"><td class="avg-rank">${p.rank}</td><td class="avg-name">${p.name}</td><td class="avg-score">${p.avg}타</td></tr>
         `).join('');
 
+        // 중앙 리더보드 및 오른쪽 기록 (생략된 기존 렌더링 로직에 processedMonthly 적용)[cite: 1, 2]
         const selectedMonth = document.getElementById('monthSelect').value;
-        const currentData = MONTHLY_DATA[selectedMonth];
-        const recs = calculateRecords(currentData);
-        document.getElementById('roundRecords').innerHTML = `
-            <div class="record-box"><span class="record-label">🦋 최다 버디</span><div class="record-value">${recs.buddy.names.join(', ')}<span class="record-count">${recs.buddy.count}개</span></div></div>
-            <div class="record-box"><span class="record-label">⛳ 최다 파</span><div class="record-value">${recs.par.names.join(', ')}<span class="record-count">${recs.par.count}개</span></div></div>
-            <div class="record-box"><span class="record-label">⚠️ 최다 보기</span><div class="record-value">${recs.bogey.names.join(', ')}<span class="record-count">${recs.bogey.count}개</span></div></div>
-        `;
-
+        const currentData = processedMonthly[selectedMonth];
         const board = document.getElementById('board'); board.innerHTML = '';
-        const sortedByScore = [...currentData].sort((a,b) => a.total - b.total);
-        sortedByScore.forEach((p, i) => {
+        const rankedData = getRankings([...currentData].sort((a,b) => a.total - b.total), 'total');
+
+        rankedData.forEach((p, i) => {
             const [outK, inK] = p.course.split('-');
             const rowId = `detail-${i}`;
             const tr = document.createElement('tr'); tr.className = 'player-row';
             tr.onclick = () => { const el = document.getElementById(rowId); el.style.display = (el.style.display === 'table-row') ? 'none' : 'table-row'; };
-            let medal = i < 3 ? ['🥇','🥈','🥉'][i] : i+1;
-            tr.innerHTML = `<td class="rank-num">${medal}</td><td>${p.name}<br><small>${p.course}</small></td><td>${p.out}</td><td>${p.in}</td><td class="total-score">${p.total}</td>`;
+            let rDisp = p.rank <= 3 ? ['🥇','🥈','🥉'][p.rank-1] : p.rank;
+            tr.innerHTML = `<td class="rank-num">${rDisp}</td><td>${p.name}<br><small>${p.course}</small></td><td>${p.out}</td><td>${p.in}</td><td class="total-score">${p.total}</td>`;
             board.appendChild(tr);
 
             const outP = COURSE[outK], inP = COURSE[inK];
@@ -194,12 +208,26 @@
             </div></td>`;
             board.appendChild(dTr);
         });
+
+        // 라운드 최다 기록 섹션[cite: 1, 2]
+        const stats = { buddy: { count: 0, names: [] }, par: { count: 0, names: [] }, bogey: { count: 0, names: [] } };
+        currentData.forEach(p => {
+            const counts = { buddy: p.rel.filter(v => v < 0).length, par: p.rel.filter(v => v === 0).length, bogey: p.rel.filter(v => v === 1).length };
+            Object.keys(counts).forEach(key => {
+                if (counts[key] > stats[key].count) { stats[key].count = counts[key]; stats[key].names = [p.name]; }
+                else if (counts[key] === stats[key].count && counts[key] > 0) { stats[key].names.push(p.name); }
+            });
+        });
+        document.getElementById('roundRecords').innerHTML = `
+            <div class="record-box"><span class="record-label">🦋 최다 버디</span><div class="record-value">${stats.buddy.names.join(', ')}<span class="record-count">${stats.buddy.count}개</span></div></div>
+            <div class="record-box"><span class="record-label">⛳ 최다 파</span><div class="record-value">${stats.par.names.join(', ')}<span class="record-count">${stats.par.count}개</span></div></div>
+            <div class="record-box"><span class="record-label">⚠️ 최다 보기</span><div class="record-value">${stats.bogey.names.join(', ')}<span class="record-count">${stats.bogey.count}개</span></div></div>
+        `;
     }
 
     function openRule() { document.getElementById("ruleModal").style.display = "block"; }
     function closeRule() { document.getElementById("ruleModal").style.display = "none"; }
     window.onclick = function(event) { if (event.target == document.getElementById("ruleModal")) closeRule(); }
-
     let expanded = false;
     function toggleDetails() {
         expanded = !expanded;
